@@ -17,12 +17,12 @@
 //==============================================================================
 /**
 */
-class SineConvolutionAudioProcessor  : public AudioProcessor
+class RingModAudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    SineConvolutionAudioProcessor();
-    ~SineConvolutionAudioProcessor();
+    RingModAudioProcessor();
+    ~RingModAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -63,10 +63,9 @@ public:
 private:
     //==============================================================================
 	float mAngle, mAngleDelta;
-	void basic_convolve(float* in, float* out, int length, float* kernel, int kernel_length);
 	void generateSineWave(float *&buffer, float nSamples);
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SineConvolutionAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RingModAudioProcessor)
 };
 
 

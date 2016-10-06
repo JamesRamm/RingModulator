@@ -1,3 +1,3 @@
 Learning how to make audio plugins with JUCE...
 
-Simple sine convolution. To see what happens.
+Simple ring modulator.

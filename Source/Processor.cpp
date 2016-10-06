@@ -9,21 +9,21 @@
 
 
 //==============================================================================
-SineConvolutionAudioProcessor::SineConvolutionAudioProcessor()
+RingModAudioProcessor::RingModAudioProcessor()
 {
 }
 
-SineConvolutionAudioProcessor::~SineConvolutionAudioProcessor()
+RingModAudioProcessor::~RingModAudioProcessor()
 {
 }
 
 //==============================================================================
-const String SineConvolutionAudioProcessor::getName() const
+const String RingModAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool SineConvolutionAudioProcessor::acceptsMidi() const
+bool RingModAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -32,7 +32,7 @@ bool SineConvolutionAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool SineConvolutionAudioProcessor::producesMidi() const
+bool RingModAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -41,50 +41,50 @@ bool SineConvolutionAudioProcessor::producesMidi() const
    #endif
 }
 
-double SineConvolutionAudioProcessor::getTailLengthSeconds() const
+double RingModAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int SineConvolutionAudioProcessor::getNumPrograms()
+int RingModAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int SineConvolutionAudioProcessor::getCurrentProgram()
+int RingModAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void SineConvolutionAudioProcessor::setCurrentProgram (int index)
+void RingModAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String SineConvolutionAudioProcessor::getProgramName (int index)
+const String RingModAudioProcessor::getProgramName (int index)
 {
     return String();
 }
 
-void SineConvolutionAudioProcessor::changeProgramName (int index, const String& newName)
+void RingModAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
 //==============================================================================
-void SineConvolutionAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void RingModAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
-void SineConvolutionAudioProcessor::releaseResources()
+void RingModAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool SineConvolutionAudioProcessor::setPreferredBusArrangement (bool isInput, int bus, const AudioChannelSet& preferredSet)
+bool RingModAudioProcessor::setPreferredBusArrangement (bool isInput, int bus, const AudioChannelSet& preferredSet)
 {
     // Reject any bus arrangements that are not compatible with your plugin
 
@@ -108,7 +108,7 @@ bool SineConvolutionAudioProcessor::setPreferredBusArrangement (bool isInput, in
 }
 #endif
 
-void SineConvolutionAudioProcessor::generateSineWave(float *&buffer, float nSamples)
+void RingModAudioProcessor::generateSineWave(float *&buffer, float nSamples)
 {
 	float currentSample;
 	for (int sample = 0; sample < nSamples; ++sample)
@@ -119,18 +119,7 @@ void SineConvolutionAudioProcessor::generateSineWave(float *&buffer, float nSamp
 	}
 }
 
-void SineConvolutionAudioProcessor::basic_convolve(float* in, float* out, int length, float* kernel, int kernel_length)
-{
-	for (int i = 0; i <= length - kernel_length; ++i) {
-
-		out[i] = 0.0;
-		for (int k = 0; k < kernel_length; ++k) {
-			out[i] += in[i + k] * kernel[kernel_length - k - 1];
-		}
-	}
-}
-
-void SineConvolutionAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+void RingModAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
 	updateAngleDelta(mFrequency, getSampleRate());
@@ -138,9 +127,6 @@ void SineConvolutionAudioProcessor::processBlock (AudioSampleBuffer& buffer, Mid
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
 	int nSamples = buffer.getNumSamples();  
-
-	// Temporary buffer in which to put the result of the convolution
-	float *tempData = new (std::nothrow) float[nSamples];
 
 	// Generate sine wave
 	float *sineWave = new (std::nothrow) float[nSamples];
@@ -156,44 +142,46 @@ void SineConvolutionAudioProcessor::processBlock (AudioSampleBuffer& buffer, Mid
         buffer.clear (i, 0, nSamples);
 
     //Process each channel
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+	int iSample, channel;
+    for (channel = 0; channel < totalNumInputChannels; ++channel)
     {
         float* channelData = buffer.getWritePointer (channel);		 
 
-		// Convolve the data with the sine wave
-		basic_convolve(channelData, tempData, nSamples, sineWave, nSamples);
-
-		// copy the result back
-		buffer.copyFrom(channel, 0, tempData, nSamples);
+		// multiply with the sine wave
+		for (iSample = 0; iSample < nSamples; ++iSample) {
+			channelData[iSample] *= sineWave[iSample];
+		}
     }
+
+	delete sineWave;
 }
 
-void SineConvolutionAudioProcessor::updateAngleDelta(double freq, double sampleRate)
+void RingModAudioProcessor::updateAngleDelta(double freq, double sampleRate)
 {
 	const double cyclesPerSample = freq / sampleRate; // [2]
 	mAngleDelta = (float)(cyclesPerSample * 2.0 * double_Pi);                                // [3]
 }
 
 //==============================================================================
-bool SineConvolutionAudioProcessor::hasEditor() const
+bool RingModAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* SineConvolutionAudioProcessor::createEditor()
+AudioProcessorEditor* RingModAudioProcessor::createEditor()
 {
-    return new SineConvolutionAudioProcessorEditor (*this);
+    return new RingModAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void SineConvolutionAudioProcessor::getStateInformation (MemoryBlock& destData)
+void RingModAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void SineConvolutionAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void RingModAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -203,5 +191,5 @@ void SineConvolutionAudioProcessor::setStateInformation (const void* data, int s
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new SineConvolutionAudioProcessor();
+    return new RingModAudioProcessor();
 }

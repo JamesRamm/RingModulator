@@ -13,7 +13,7 @@
 
 
 //==============================================================================
-SineConvolutionAudioProcessorEditor::SineConvolutionAudioProcessorEditor (SineConvolutionAudioProcessor& p)
+RingModAudioProcessorEditor::RingModAudioProcessorEditor (RingModAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // Make sure that before the constructor has finished, you've set the
@@ -33,7 +33,7 @@ SineConvolutionAudioProcessorEditor::SineConvolutionAudioProcessorEditor (SineCo
 
 	// these define the parameters of our slider object
 	amplitude.setSliderStyle(Slider::LinearBarVertical);
-	amplitude.setRange(0.0, 0.5, 0.005);
+	amplitude.setRange(0.0, 1.0, 0.005);
 	amplitude.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
 	amplitude.setPopupDisplayEnabled(true, this);
 	amplitude.setTextValueSuffix(" Amplitude");
@@ -46,12 +46,12 @@ SineConvolutionAudioProcessorEditor::SineConvolutionAudioProcessorEditor (SineCo
 	addAndMakeVisible(&amplitude);
 }
 
-SineConvolutionAudioProcessorEditor::~SineConvolutionAudioProcessorEditor()
+RingModAudioProcessorEditor::~RingModAudioProcessorEditor()
 {
 }
 
 //==============================================================================
-void SineConvolutionAudioProcessorEditor::paint (Graphics& g)
+void RingModAudioProcessorEditor::paint (Graphics& g)
 {
 	// fill the whole window white
 	g.fillAll(Colours::white);
@@ -65,7 +65,7 @@ void SineConvolutionAudioProcessorEditor::paint (Graphics& g)
 	g.drawFittedText("Settings", 0, 0, getWidth(), 30, Justification::centred, 1);
 }
 
-void SineConvolutionAudioProcessorEditor::resized()
+void RingModAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
@@ -75,7 +75,7 @@ void SineConvolutionAudioProcessorEditor::resized()
 
 }
 
-void SineConvolutionAudioProcessorEditor::sliderValueChanged(Slider *slider) {
+void RingModAudioProcessorEditor::sliderValueChanged(Slider *slider) {
 	processor.mFrequency = (float)frequency.getValue();
 	processor.mLevel = (float)amplitude.getValue();
 }
