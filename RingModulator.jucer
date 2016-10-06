@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="PAAz0x" name="RingModulator" projectType="audioplug" version="1.0.0"
-              bundleIdentifier="ramshacklerecording.SineConvolution" includeBinaryInAppConfig="1"
+              bundleIdentifier="ramshacklerecording.RingModulator" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="1" buildAU="0" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" pluginName="SineConvolution" pluginDesc="SineConvolution"
+              buildAAX="0" pluginName="RingModulator" pluginDesc="RingModulator"
               pluginManufacturer="Ramshackle Recording" pluginManufacturerCode="Manu"
               pluginCode="Paaz" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="SineConvolutionAU" pluginRTASCategory=""
-              aaxIdentifier="com.yourcompany.SineConvolution" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="4.2.4">
+              pluginAUExportPrefix="RingModAU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.RingModulator"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="4.2.4">
   <MAINGROUP id="FKRcX2" name="RingModulator">
     <GROUP id="{4A5405C9-61DE-F56D-9316-0B012024AC05}" name="Source">
       <FILE id="k6e3Q4" name="Processor.cpp" compile="1" resource="0" file="Source/Processor.cpp"/>

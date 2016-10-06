@@ -56,15 +56,13 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	void updateAngleDelta(double freq, double sampleRate);
 	float mFrequency = 100.0;
 	float mLevel = 0.125f;
 
 private:
     //==============================================================================
-	float mAngle, mAngleDelta;
-	void generateSineWave(float *&buffer, float nSamples);
-
+	float mAngle, mAngFreq, mSampleTime;
+	float generateSineSample(int sampleNo);
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RingModAudioProcessor)
 };
 

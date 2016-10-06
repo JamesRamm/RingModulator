@@ -108,29 +108,21 @@ bool RingModAudioProcessor::setPreferredBusArrangement (bool isInput, int bus, c
 }
 #endif
 
-void RingModAudioProcessor::generateSineWave(float *&buffer, float nSamples)
-{
-	float currentSample;
-	for (int sample = 0; sample < nSamples; ++sample)
-	{
-		currentSample = (float)std::sin(mAngle);
-		mAngle += mAngleDelta;
-		buffer[sample] = currentSample * mLevel;
-	}
+float RingModAudioProcessor::generateSineSample(int sampleNo) {	
+	mSampleTime = sampleNo / getSampleRate();
+	mAngle = mSampleTime * mAngFreq;
+	return (float)std::sin(mAngle) * mLevel;
 }
 
 void RingModAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
-	updateAngleDelta(mFrequency, getSampleRate());
+	// Update the angular frequency to use
+	mAngFreq = mFrequency * double_Pi;
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
 	int nSamples = buffer.getNumSamples();  
-
-	// Generate sine wave
-	float *sineWave = new (std::nothrow) float[nSamples];
-	generateSineWave(sineWave, nSamples);
 
 	// In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -145,22 +137,14 @@ void RingModAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
 	int iSample, channel;
     for (channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        float* channelData = buffer.getWritePointer (channel);		 
-
 		// multiply with the sine wave
 		for (iSample = 0; iSample < nSamples; ++iSample) {
-			channelData[iSample] *= sineWave[iSample];
+			*buffer.getWritePointer(channel, iSample) = *buffer.getReadPointer(channel, iSample) * generateSineSample(iSample);
 		}
     }
-
-	delete sineWave;
+	mAngle = 0.0;
 }
 
-void RingModAudioProcessor::updateAngleDelta(double freq, double sampleRate)
-{
-	const double cyclesPerSample = freq / sampleRate; // [2]
-	mAngleDelta = (float)(cyclesPerSample * 2.0 * double_Pi);                                // [3]
-}
 
 //==============================================================================
 bool RingModAudioProcessor::hasEditor() const
